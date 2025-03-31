@@ -8,6 +8,36 @@ class LeadsController < ApplicationController
     @leads = fetch_leads_by_smartview
   end
 
+  def update_description
+  lead_id = params[:id]
+  new_description = params[:description]
+
+  conn = Faraday.new(url: 'https://api.close.com/api/v1/') do |faraday|
+    faraday.request :authorization, :basic, CLOSE_API_KEY, ''
+    faraday.adapter Faraday.default_adapter
+  end
+
+  response = conn.put(
+    "lead/#{lead_id}/",
+    { description: new_description }.to_json,
+    'Content-Type' => 'application/json'
+  )
+
+  if response.success?
+    render json: { status: 'ok' }
+  else
+    Rails.logger.error "Close API Error: #{response.status} - #{response.body}"
+    render json: { status: 'error', message: response.body }, status: :unprocessable_entity
+  end
+end
+
+
+
+
+
+
+
+
   private
 
   def fetch_leads_by_smartview
