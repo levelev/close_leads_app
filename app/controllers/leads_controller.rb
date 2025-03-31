@@ -1,8 +1,6 @@
 class LeadsController < ApplicationController
-  CLOSE_API_KEY = 'api_6D5d2FMmcNMQqrRmw0o5QB.3oWH6P1b4eX5TW3LpWngOU'
-  SMART_VIEW_ID = 'save_7UsYIsBLesxVJmt4cHzQUNuzcbxL2u5l1sUsrvy9yhp'
-
-
+  CLOSE_API_KEY = ENV["CLOSE_API_KEY"]
+  SMART_VIEW_ID = ENV["SMART_VIEW_ID"]
 
   def index
     @leads = fetch_leads_by_smartview
