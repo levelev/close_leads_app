@@ -27,7 +27,7 @@ class LeadsController < ApplicationController
           }
         ]
       },
-      _fields: { lead: ['id', 'name', 'status_label', 'description', 'contacts', 'custom.cf_K3ausfM3pWXa7CAMQIpWV0eV7Dqc2IXIuOpiX4Luqa9'] },
+      _fields: { lead: ['id', 'name', 'status_label', 'description', 'contacts', 'custom.cf_K3ausfM3pWXa7CAMQIpWV0eV7Dqc2IXIuOpiX4Luqa9', 'date_created'] },
       _limit: 200
     }
 
