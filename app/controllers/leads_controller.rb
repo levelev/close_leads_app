@@ -1,6 +1,6 @@
 class LeadsController < ApplicationController
   CLOSE_API_KEY = 'api_6D5d2FMmcNMQqrRmw0o5QB.3oWH6P1b4eX5TW3LpWngOU'
-  SMART_VIEW_ID = 'save_Mrwcxby2q272p2fapBKRC1B2ucetYVuJCRD3Cj3aimn'
+  SMART_VIEW_ID = 'save_7UsYIsBLesxVJmt4cHzQUNuzcbxL2u5l1sUsrvy9yhp'
 
 
 
@@ -27,7 +27,7 @@ class LeadsController < ApplicationController
           }
         ]
       },
-      _fields: { lead: ['id', 'name', 'status_label', 'description', 'contacts', 'custom.cf_K3ausfM3pWXa7CAMQIpWV0eV7Dqc2IXIuOpiX4Luqa9', 'date_created'] },
+      _fields: { lead: ['id', 'name', 'status_label', 'description', 'contacts', 'custom.cf_K3ausfM3pWXa7CAMQIpWV0eV7Dqc2IXIuOpiX4Luqa9', 'date_created', 'custom.cf_95xSZmN3OrCcUBVrU3M0QDn9T2peoKz4q9n1HHV5I1A'] },
       _limit: 200
     }
 

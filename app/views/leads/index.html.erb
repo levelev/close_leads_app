@@ -26,7 +26,20 @@
         <span class="sort-indicator" onclick="sortTable(3, 'asc')">▲</span>
         <span class="sort-indicator" onclick="sortTable(3, 'desc')">▼</span>
       </th>
+      <th>Kunde</th>
       <th>View in Close</th>
+      <th>
+        Termin gewünscht?<br>
+        <span class="sort-indicator" onclick="sortTable(6, 'asc')">▲</span>
+        <span class="sort-indicator" onclick="sortTable(6, 'desc')">▼</span><br>
+        <input type="text" id="filterTermin" onkeyup="filterTable()" placeholder="Filter by Termin">
+      </th>
+      <th>
+        Description<br>
+        <span class="sort-indicator" onclick="sortTable(7, 'asc')">▲</span>
+        <span class="sort-indicator" onclick="sortTable(7, 'desc')">▼</span><br>
+        <input type="text" id="filterDescription" onkeyup="filterTable()" placeholder="Filter by description">
+      </th>
     </tr>
   </thead>
   <tbody>
@@ -48,7 +61,10 @@
         <% end %>
       </td>
       <td><%= DateTime.parse(lead['date_created']).strftime('%Y-%m-%d') %></td>
+      <td><%= lead['custom.cf_K3ausfM3pWXa7CAMQIpWV0eV7Dqc2IXIuOpiX4Luqa9'] %></td>
       <td><a href="https://app.close.com/lead/<%= lead['id'] %>" target="_blank">View in Close</a></td>
+      <td><%= lead['custom.cf_95xSZmN3OrCcUBVrU3M0QDn9T2peoKz4q9n1HHV5I1A'] %></td>
+      <td><%= lead['description'] %></td>
     </tr>
     <% end %>
   </tbody>
@@ -59,6 +75,8 @@
     const nameFilter = document.getElementById('filterName').value.toLowerCase();
     const statusFilter = document.getElementById('filterStatus').value.toLowerCase();
     const contactsFilter = document.getElementById('filterContacts').value.toLowerCase();
+    const terminFilter = document.getElementById('filterTermin').value.toLowerCase();
+    const descriptionFilter = document.getElementById('filterDescription').value.toLowerCase();
     const table = document.getElementById('leadsTable');
     const rows = table.querySelectorAll('tbody tr');
 
@@ -66,11 +84,16 @@
       const nameCell = row.cells[0].textContent.toLowerCase();
       const statusCell = row.cells[1].textContent.toLowerCase();
       const contactsCell = row.cells[2].textContent.toLowerCase();
+      const terminCell = row.cells[6].textContent.toLowerCase();
+      const descriptionCell = row.cells[7].textContent.toLowerCase();
+
       const nameMatches = nameCell.includes(nameFilter);
       const statusMatches = statusCell.includes(statusFilter);
       const contactsMatches = contactsCell.includes(contactsFilter);
+      const terminMatches = terminCell.includes(terminFilter);
+      const descriptionMatches = descriptionCell.includes(descriptionFilter);
 
-      if (nameMatches && statusMatches && contactsMatches) {
+      if (nameMatches && statusMatches && contactsMatches && terminMatches && descriptionMatches) {
         row.style.display = '';
       } else {
         row.style.display = 'none';
@@ -88,7 +111,7 @@
       const aText = a.cells[columnIndex].textContent;
       const bText = b.cells[columnIndex].textContent;
 
-      if (columnIndex === 3) { // Assume 'Created' column has dates
+      if (columnIndex === 3) { // Created column
         const aDate = new Date(aText);
         const bDate = new Date(bText);
         return isAscending ? aDate - bDate : bDate - aDate;
