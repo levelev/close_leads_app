@@ -1,0 +1,21 @@
+<h1>Smartview Leads</h1>
+
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @leads.each do |lead| %>
+      <tr>
+        <td><%= lead['id'] %></td>
+        <td><%= lead['name'] %></td>
+        <td><%= lead['status_label'] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
