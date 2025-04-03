@@ -1,5 +1,18 @@
 <h1>Smartview Leads</h1>
 
+<% if current_user.smart_view_ids.any? %>
+  <%= form_with url: root_path, method: :get, local: true do %>
+    <label for="smart_view_id">Smart View auswählen:</label>
+    <select name="smart_view_id" id="smart_view_id" onchange="this.form.submit()">
+      <% current_user.smart_view_ids.each do |id| %>
+        <option value="<%= id %>" <%= "selected" if id == @current_smart_view_id %>>
+          <%= id %> <!-- Falls du Namen statt IDs anzeigen willst, brauchst du extra Lookup-Logik -->
+        </option>
+      <% end %>
+    </select>
+  <% end %>
+<% end %>
+
 <table id="leadsTable">
   <thead>
     <tr>

@@ -2,10 +2,10 @@ class LeadsController < ApplicationController
   before_action :authenticate_user!
 
   CLOSE_API_KEY = ENV["CLOSE_API_KEY"]
-  SMART_VIEW_ID = ENV["SMART_VIEW_ID"]
 
   def index
-    @leads = fetch_leads_by_smartview
+    @current_smart_view_id = params[:smart_view_id] || current_user.smart_view_ids&.first
+    @leads = fetch_leads_by_smartview(@current_smart_view_id)
     @lead_statuses = fetch_lead_statuses
   end
 
@@ -19,7 +19,7 @@ class LeadsController < ApplicationController
       "lead/#{lead_id}/",
       { description: new_description }.to_json,
       'Content-Type' => 'application/json'
-      )
+    )
 
     if response.success?
       render json: { status: 'ok' }
@@ -39,7 +39,7 @@ class LeadsController < ApplicationController
       "lead/#{lead_id}/",
       { status_id: new_status_id }.to_json,
       'Content-Type' => 'application/json'
-      )
+    )
 
     if response.success?
       updated_lead = fetch_single_lead(lead_id)
@@ -48,7 +48,7 @@ class LeadsController < ApplicationController
         "lead_status_#{lead_id}",
         partial: "leads/status",
         locals: { lead: updated_lead, lead_statuses: fetch_lead_statuses }
-        )
+      )
     else
       Rails.logger.error "Close API Error: #{response.status} - #{response.body}"
       render json: { status: 'error', message: response.body }, status: :unprocessable_entity
@@ -57,7 +57,9 @@ class LeadsController < ApplicationController
 
   private
 
-  def fetch_leads_by_smartview
+  def fetch_leads_by_smartview(smart_view_id)
+    return [] unless smart_view_id.present?
+
     conn = close_connection
 
     search_query = {
@@ -65,7 +67,7 @@ class LeadsController < ApplicationController
         type: 'and',
         queries: [
           { type: 'object_type', object_type: 'lead' },
-          { type: 'any_of_saved_search', saved_search_ids: [SMART_VIEW_ID] }
+          { type: 'any_of_saved_search', saved_search_ids: [smart_view_id] }
         ]
       },
       _fields: {
