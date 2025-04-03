@@ -1,4 +1,6 @@
 class LeadsController < ApplicationController
+  before_action :authenticate_user!
+
   CLOSE_API_KEY = ENV["CLOSE_API_KEY"]
   SMART_VIEW_ID = ENV["SMART_VIEW_ID"]
 
@@ -17,7 +19,7 @@ class LeadsController < ApplicationController
       "lead/#{lead_id}/",
       { description: new_description }.to_json,
       'Content-Type' => 'application/json'
-    )
+      )
 
     if response.success?
       render json: { status: 'ok' }
@@ -37,7 +39,7 @@ class LeadsController < ApplicationController
       "lead/#{lead_id}/",
       { status_id: new_status_id }.to_json,
       'Content-Type' => 'application/json'
-    )
+      )
 
     if response.success?
       updated_lead = fetch_single_lead(lead_id)
@@ -46,7 +48,7 @@ class LeadsController < ApplicationController
         "lead_status_#{lead_id}",
         partial: "leads/status",
         locals: { lead: updated_lead, lead_statuses: fetch_lead_statuses }
-      )
+        )
     else
       Rails.logger.error "Close API Error: #{response.status} - #{response.body}"
       render json: { status: 'error', message: response.body }, status: :unprocessable_entity

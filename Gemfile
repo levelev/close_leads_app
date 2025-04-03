@@ -62,8 +62,10 @@ group :test do
   gem "selenium-webdriver"
 end
 
+#my gems
 
-gem 'faraday'
+gem "faraday"
 gem "dotenv-rails"
+gem "devise"
 
 
