@@ -40,13 +40,12 @@ class LeadsController < ApplicationController
     )
 
     if response.success?
+      updated_lead = fetch_single_lead(lead_id)
+
       render turbo_stream: turbo_stream.replace(
         "lead_status_#{lead_id}",
         partial: "leads/status",
-        locals: {
-          lead: { 'id' => lead_id, 'status_id' => new_status_id },
-          lead_statuses: fetch_lead_statuses
-        }
+        locals: { lead: updated_lead, lead_statuses: fetch_lead_statuses }
       )
     else
       Rails.logger.error "Close API Error: #{response.status} - #{response.body}"
@@ -82,6 +81,18 @@ class LeadsController < ApplicationController
     else
       Rails.logger.error "Close API Error: #{response.status} - #{response.body}"
       []
+    end
+  end
+
+  def fetch_single_lead(lead_id)
+    conn = close_connection
+    response = conn.get("lead/#{lead_id}/")
+
+    if response.success?
+      JSON.parse(response.body)
+    else
+      Rails.logger.error "Close API Error (single lead): #{response.status} - #{response.body}"
+      nil
     end
   end
 
