@@ -69,3 +69,6 @@ gem "dotenv-rails"
 gem "devise"
 gem "pg"
 
+gem 'rails_12factor', group: :production # for Heroku
+
+
