@@ -1,20 +1,20 @@
-<h1>Smartview Leads</h1>
+<h1>Leads</h1>
 
 <% if current_user.smart_view_ids.any? %>
-  <%= form_with url: root_path, method: :get, local: true do %>
-    <label for="smart_view_id">Smart View auswählen:</label>
-    <select name="smart_view_id" id="smart_view_id" onchange="this.form.submit()">
-      <% current_user.smart_view_ids.each do |id| %>
-        <option value="<%= id %>" <%= "selected" if id == @current_smart_view_id %>>
-          <%= id %> <!-- Falls du Namen statt IDs anzeigen willst, brauchst du extra Lookup-Logik -->
-        </option>
-      <% end %>
-    </select>
+<%= form_with url: root_path, method: :get, local: true do %>
+<label for="smart_view_id">Smart View auswählen:</label>
+<select name="smart_view_id" id="smart_view_id" onchange="this.form.submit()">
+  <% current_user.smart_view_ids.each do |id| %>
+  <option value="<%= id %>" <%= "selected" if id == @current_smart_view_id %>>
+    <%= id %> <!-- Falls du Namen statt IDs anzeigen willst, brauchst du extra Lookup-Logik -->
+  </option>
   <% end %>
+</select>
+<% end %>
 <% end %>
 
-<table id="leadsTable">
-  <thead>
+<table class="table table-light" id="leadsTable">
+  <thead class="thead-dark">
     <tr>
       <th>Name</th>
       <th>Status</th>
@@ -27,38 +27,38 @@
   </thead>
   <tbody>
     <% @leads.each do |lead| %>
-      <tr>
-        <td><%= lead['name'] %></td>
-        <td>
-          <turbo-frame id="lead_status_<%= lead['id'] %>">
-            <%= render partial: "leads/status", locals: { lead: lead, lead_statuses: @lead_statuses } %>
-          </turbo-frame>
-        </td>
-        <td>
-          <% if lead['contacts'] %>
-            <% lead['contacts'].each do |contact| %>
-              <% if contact['urls'] && !contact['urls'].empty? %>
-                <% contact['urls'].each do |link| %>
-                  <a href="<%= link['url'] %>" target="_blank"><%= contact['name'] %></a><br>
-                <% end %>
-              <% else %>
-                <%= contact['name'] %><br>
-              <% end %>
-            <% end %>
-          <% end %>
-        </td>
-        <td><%= DateTime.parse(lead['date_created']).strftime('%Y-%m-%d') %></td>
-        <td><%= lead['custom.cf_K3ausfM3pWXa7CAMQIpWV0eV7Dqc2IXIuOpiX4Luqa9'] %></td>
-        <td><a href="https://app.close.com/lead/<%= lead['id'] %>" target="_blank">View in Close</a></td>
-        <td>
-          <form action="<%= update_description_path(lead['id']) %>" method="post" data-remote="true">
-            <input type="hidden" name="_method" value="patch">
-            <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-            <textarea name="description" rows="2" cols="20"><%= lead['description'] %></textarea><br>
-            <button type="submit">Save</button>
-          </form>
-        </td>
-      </tr>
+    <tr>
+      <td><%= lead['name'] %></td>
+      <td>
+        <turbo-frame id="lead_status_<%= lead['id'] %>">
+          <%= render partial: "leads/status", locals: { lead: lead, lead_statuses: @lead_statuses } %>
+        </turbo-frame>
+      </td>
+      <td>
+        <% if lead['contacts'] %>
+        <% lead['contacts'].each do |contact| %>
+        <% if contact['urls'] && !contact['urls'].empty? %>
+        <% contact['urls'].each do |link| %>
+        <a href="<%= link['url'] %>" target="_blank"><%= contact['name'] %></a><br>
+        <% end %>
+        <% else %>
+        <%= contact['name'] %><br>
+        <% end %>
+        <% end %>
+        <% end %>
+      </td>
+      <td><%= DateTime.parse(lead['date_created']).strftime('%Y-%m-%d') %></td>
+      <td><%= lead['custom.cf_K3ausfM3pWXa7CAMQIpWV0eV7Dqc2IXIuOpiX4Luqa9'] %></td>
+      <td><a href="https://app.close.com/lead/<%= lead['id'] %>" target="_blank">View in Close</a></td>
+      <td>
+        <form action="<%= update_description_path(lead['id']) %>" method="post" data-remote="true">
+          <input type="hidden" name="_method" value="patch">
+          <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+          <textarea name="description" rows="2" cols="20"><%= lead['description'] %></textarea><br>
+          <button type="submit">Save</button>
+        </form>
+      </td>
+    </tr>
     <% end %>
   </tbody>
 </table>
