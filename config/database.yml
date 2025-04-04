@@ -2,7 +2,7 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
-  username: <%= ENV.fetch("PGUSER", "postgres") %>
+  username: <%= ENV.fetch("PGUSER", `whoami`.strip) %>
   password: <%= ENV.fetch("PGPASSWORD", "") %>
   host: <%= ENV.fetch("PGHOST", "localhost") %>
 
@@ -15,10 +15,7 @@ test:
   database: close_leads_app_test
 
 production:
-  <<: *default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
   url: <%= ENV["DATABASE_URL"] %>
-
-  # Fix für SolidCable / ActionCable DB-setup
-  cable:
-    <<: *default
-    url: <%= ENV["DATABASE_URL"] %>
