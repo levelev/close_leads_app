@@ -15,7 +15,5 @@ test:
   database: close_leads_app_test
 
 production:
-  adapter: postgresql
-  encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+  <<: *default
   url: <%= ENV["DATABASE_URL"] %>
