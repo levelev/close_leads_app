@@ -1,5 +1,5 @@
 <turbo-frame id="lead_status_<%= lead['id'] %>">
-  <form action="/leads/<%= lead['id'] %>/update_status" method="post" data-turbo-frame="lead_status_<%= lead['id'] %>">
+  <form action="<%= update_status_path(lead['id']) %>" method="post" data-turbo-frame="lead_status_<%= lead['id'] %>">
     <input type="hidden" name="_method" value="patch">
     <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
 
