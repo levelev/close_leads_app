@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-  <%= javascript_importmap_tags %>
 
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "dataTables.bootstrap5.min.css", "data-turbo-track": "reload" %>
@@ -14,7 +13,6 @@
 </head>
 
 <body>
-  <%= javascript_include_tag "initTheme.js" %>
   <div id="app">
     <%= render "layouts/sidebar" %>
     <div id="main">
