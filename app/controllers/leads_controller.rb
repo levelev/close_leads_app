@@ -5,6 +5,7 @@ class LeadsController < ApplicationController
 
   def index
     @current_smart_view_id = params[:smart_view_id] || current_user.smart_view_ids&.first
+    @smart_views = fetch_smart_views.select { |smart_view| current_user.smart_view_ids.include?(smart_view["id"]) }
     @leads = fetch_leads_by_smartview(@current_smart_view_id)
     @lead_statuses = fetch_lead_statuses
   end
@@ -107,6 +108,17 @@ class LeadsController < ApplicationController
 
     if response.success?
       JSON.parse(response.body)['data']
+    else
+      Rails.logger.error "Close API Error (statuses): #{response.status} - #{response.body}"
+      []
+    end
+  end
+
+  def fetch_smart_views
+    response = close_connection.get("saved_search/")
+
+    if response.success?
+      JSON.parse(response.body)["data"]
     else
       Rails.logger.error "Close API Error (statuses): #{response.status} - #{response.body}"
       []
