@@ -10,15 +10,10 @@ class LeadsController < ApplicationController
     @lead_statuses = fetch_lead_statuses
   end
 
-  def update_description
-    lead_id = params[:id]
-    new_description = params[:description]
-
-    conn = close_connection
-
+  def update
     response = conn.put(
-      "lead/#{lead_id}/",
-      { description: new_description }.to_json,
+      "lead/#{params[:id]}/",
+      { description: params[:description], status_id: params[:status_id] }.to_json,
       'Content-Type' => 'application/json'
     )
 
@@ -30,38 +25,10 @@ class LeadsController < ApplicationController
     end
   end
 
-  def update_status
-    lead_id = params[:id]
-    new_status_id = params[:status_id]
-
-    conn = close_connection
-
-    response = conn.put(
-      "lead/#{lead_id}/",
-      { status_id: new_status_id }.to_json,
-      'Content-Type' => 'application/json'
-    )
-
-    if response.success?
-      updated_lead = fetch_single_lead(lead_id)
-
-      render turbo_stream: turbo_stream.replace(
-        "lead_status_#{lead_id}",
-        partial: "leads/status",
-        locals: { lead: updated_lead, lead_statuses: fetch_lead_statuses }
-      )
-    else
-      Rails.logger.error "Close API Error: #{response.status} - #{response.body}"
-      render json: { status: 'error', message: response.body }, status: :unprocessable_entity
-    end
-  end
-
   private
 
   def fetch_leads_by_smartview(smart_view_id)
     return [] unless smart_view_id.present?
-
-    conn = close_connection
 
     search_query = {
       query: {
@@ -89,21 +56,7 @@ class LeadsController < ApplicationController
     end
   end
 
-  def fetch_single_lead(lead_id)
-    conn = close_connection
-    response = conn.get("lead/#{lead_id}/")
-
-    if response.success?
-      JSON.parse(response.body)
-    else
-      Rails.logger.error "Close API Error (single lead): #{response.status} - #{response.body}"
-      nil
-    end
-  end
-
   def fetch_lead_statuses
-    conn = close_connection
-
     response = conn.get('status/lead/')
 
     if response.success?
@@ -115,7 +68,7 @@ class LeadsController < ApplicationController
   end
 
   def fetch_smart_views
-    response = close_connection.get("saved_search/")
+    response = conn.get("saved_search/")
 
     if response.success?
       JSON.parse(response.body)["data"]
@@ -125,7 +78,7 @@ class LeadsController < ApplicationController
     end
   end
 
-  def close_connection
+  def conn
     Faraday.new(url: 'https://api.close.com/api/v1/') do |faraday|
       faraday.request :authorization, :basic, CLOSE_API_KEY, ''
       faraday.adapter Faraday.default_adapter

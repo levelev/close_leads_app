@@ -15,7 +15,7 @@
             <li class="sidebar-title">Smart Views</li>
             <% @smart_views.each do |smart_view| %>
               <li class="sidebar-item <%= smart_view["id"] == @current_smart_view_id ? "active" : "" %>">
-                <%= link_to "/?smart_view_id=#{smart_view["id"]}", data: { turbo: false }, class: "sidebar-link" do %>
+                <%= link_to "/?smart_view_id=#{smart_view["id"]}", data: { turbo: false}, class: "sidebar-link" do %>
                   <span><%= smart_view["name"] %></span>
                 <% end %>
               </li>
@@ -31,7 +31,7 @@
         </ul>
         <% else %>
           <ul class="menu">
-            <li class="sidebar-item">
+            <li class="sidebar-item active">
               <%= link_to new_user_session_path, class: "sidebar-link" do %>
                 <i class="bi bi-box-arrow-in-right"></i>
                 <span>Login</span>
