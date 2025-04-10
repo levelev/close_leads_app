@@ -29,7 +29,9 @@
                 <th>Contacts</th>
                 <th>Created</th>
                 <th>Kunde</th>
-                <th>View in Close</th>
+                <% if current_user.admin? %>
+                <th>Close.com</th>
+                <% end %>
                 <th>Description</th>
                 <th>Save</th>
               </tr>
@@ -62,7 +64,11 @@
                   </td>
                   <td><%= DateTime.parse(lead['date_created']).strftime('%Y-%m-%d') %></td>
                   <td><%= lead['custom.cf_K3ausfM3pWXa7CAMQIpWV0eV7Dqc2IXIuOpiX4Luqa9'] %></td>
-                  <td><a href="https://app.close.com/lead/<%= lead['id'] %>" target="_blank">View in Close</a></td>
+                <% if current_user.admin? %>
+
+                  <td><a href="https://app.close.com/lead/<%= lead['id'] %>" target="_blank">Close.com</a></td>
+                  <% end %>
+
                   <td>
                     <textarea form=<%= lead['id'] %> class="form-control mb-2 auto-resize" name="description" rows="1" cols="20"><%= lead['description'] %></textarea>
                   </td>
