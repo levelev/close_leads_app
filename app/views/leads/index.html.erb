@@ -1,78 +1,103 @@
-<h1>Leads</h1>
+<header class="mb-3">
+  <a href="#" class="burger-btn d-block d-xl-none">
+    <i class="bi bi-justify fs-3"></i>
+  </a>
+</header>
 
-<!-- Smart View Auswahl (optional) -->
-<% if current_user.smart_view_ids.any? %>
-  <%= form_with url: root_path, method: :get, local: true do %>
-    <label for="smart_view_id">Smart View auswählen:</label>
-    <select name="smart_view_id" id="smart_view_id" onchange="this.form.submit()">
-      <% current_user.smart_view_ids.each do |id| %>
-        <option value="<%= id %>" <%= "selected" if id == @current_smart_view_id %>>
-          <%= id %>
-        </option>
-      <% end %>
-    </select>
+
+<%# Forms outside table connected to rows with form attribute %>
+<% @leads.each do |lead| %>
+  <%= form_with url: lead_path(lead['id']), id: lead['id'], method: :patch do |form| %>
   <% end %>
 <% end %>
 
-<!-- Tabelle Container -->
-<div class="table-responsive">
-  <table class="table table-light" id="leadsTable">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Status</th>
-        <th>Contacts</th>
-        <th>Created</th>
-        <th>Kunde</th>
-        <th>View in Close</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @leads.each do |lead| %>
-        <tr>
-          <td><%= lead['name'] %></td>
-          <td>
-            <turbo-frame id="lead_status_<%= lead['id'] %>">
-              <%= render partial: "leads/status", locals: { lead: lead, lead_statuses: @lead_statuses } %>
-            </turbo-frame>
-          </td>
-          <td>
-            <% if lead['contacts'] %>
-              <% lead['contacts'].each do |contact| %>
-                <% if contact['urls'] && !contact['urls'].empty? %>
-                  <% contact['urls'].each do |link| %>
-                    <a href="<%= link['url'] %>" target="_blank"><%= contact['name'] %></a><br>
-                  <% end %>
-                <% else %>
-                  <%= contact['name'] %><br>
-                <% end %>
+<div class="page-heading">
+  <div class="page-title">
+    <h3>Leads</h3>
+  </div>
+</div>
+<div class="page-content">
+  <section class="section">
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table" id="leadsTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Contacts</th>
+                <th>Created</th>
+                <th>Kunde</th>
+                <th>View in Close</th>
+                <th>Description</th>
+                <th>Save</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @leads.each do |lead| %>
+                <tr>
+                  <td><%= lead['name'] %></td>
+                  <td data-order="<%= lead['status_label'] %>" data-search="<%= lead['status_label'] %>">
+                    <select form=<%= lead['id'] %> name="status_id" class="form-select mb-2">
+                      <% @lead_statuses.each do |status| %>
+                        <option value="<%= status['id'] %>" <%= "selected" if lead['status_id'] == status['id'] %>>
+                          <%= status['label'] %>
+                        </option>
+                      <% end %>
+                    </select>
+                  </td>
+                  <td>
+                    <% if lead['contacts'] %>
+                      <% lead['contacts'].each do |contact| %>
+                        <% if contact['urls'] && !contact['urls'].empty? %>
+                          <% contact['urls'].each do |link| %>
+                            <a href="<%= link['url'] %>" target="_blank"><%= contact['name'] %></a><br>
+                          <% end %>
+                        <% else %>
+                          <%= contact['name'] %><br>
+                        <% end %>
+                      <% end %>
+                    <% end %>
+                  </td>
+                  <td><%= DateTime.parse(lead['date_created']).strftime('%Y-%m-%d') %></td>
+                  <td><%= lead['custom.cf_K3ausfM3pWXa7CAMQIpWV0eV7Dqc2IXIuOpiX4Luqa9'] %></td>
+                  <td><a href="https://app.close.com/lead/<%= lead['id'] %>" target="_blank">View in Close</a></td>
+                  <td>
+                    <textarea form=<%= lead['id'] %> class="form-control mb-2 auto-resize" name="description" rows="1" cols="20"><%= lead['description'] %></textarea>
+                  </td>
+                  <td><button form=<%= lead['id'] %> type="submit" class="btn btn-primary">Save</button></td>
+                </tr>
               <% end %>
-            <% end %>
-          </td>
-          <td><%= DateTime.parse(lead['date_created']).strftime('%Y-%m-%d') %></td>
-          <td><%= lead['custom.cf_K3ausfM3pWXa7CAMQIpWV0eV7Dqc2IXIuOpiX4Luqa9'] %></td>
-          <td><a href="https://app.close.com/lead/<%= lead['id'] %>" target="_blank">View in Close</a></td>
-          <td>
-            <form action="<%= update_description_path(lead['id']) %>" method="post" data-remote="true">
-              <input type="hidden" name="_method" value="patch">
-              <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-              <textarea name="description" rows="2" cols="20"><%= lead['description'] %></textarea><br>
-              <button type="submit">Save</button>
-            </form>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <div>
+  </section>
 </div>
 
 <!-- Skript zur Initialisierung der DataTable -->
 <script>
-  $(document).ready(function() {
-    $('#leadsTable').DataTable({
+  document.addEventListener('DOMContentLoaded', () => {  
+    let table = new DataTable("#leadsTable", {
       responsive: true,
       // Weitere Optionen nach Bedarf hinzufügen
     });
-  });
+
+
+    // Auto resize description field
+    var textareas = document.querySelectorAll('.auto-resize');
+    textareas.forEach(function(textarea) {
+      // Set initial height
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 2 + 'px';
+
+      // Add input event listener
+      textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 2 + 'px';
+      });
+    });
+  })
 </script>

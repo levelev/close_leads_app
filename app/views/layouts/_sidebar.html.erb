@@ -1,0 +1,44 @@
+<div id="sidebar">
+  <div class="sidebar-wrapper active">
+    <div class="sidebar-header position-relative">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="logo">
+          <%= link_to "Close Leads", root_path %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="sidebar-menu">
+      <% if user_signed_in? %>
+        <ul class="menu">
+          <% if @smart_views %>
+            <li class="sidebar-title">Smart Views</li>
+            <% @smart_views.each do |smart_view| %>
+              <li class="sidebar-item <%= smart_view["id"] == @current_smart_view_id ? "active" : "" %>">
+                <%= link_to "/?smart_view_id=#{smart_view["id"]}", data: { turbo: false}, class: "sidebar-link" do %>
+                  <span><%= smart_view["name"] %></span>
+                <% end %>
+              </li>
+            <% end %>
+          <% end %>
+          <li class="sidebar-title">Settings</li>
+          <li class="sidebar-item">
+            <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "sidebar-link" do %>
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Logout</span>
+            <% end %>
+          </li>
+        </ul>
+        <% else %>
+          <ul class="menu">
+            <li class="sidebar-item active">
+              <%= link_to new_user_session_path, class: "sidebar-link" do %>
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span>Login</span>
+              <% end %>
+            </li>
+          </ul>
+        <% end %>
+    </div>
+  </div>
+</div>
